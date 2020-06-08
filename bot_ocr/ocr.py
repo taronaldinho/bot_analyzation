@@ -9,7 +9,7 @@ from logging import (DEBUG, INFO, WARNING, ERROR, CRITICAL, Formatter,
                      StreamHandler, getLogger, handlers, log)
 
 
-img_dir = r"C:\01_works\Dev\Jupyter\bot_analyzation\bot_ocr\iCloud Photos"
+img_dir = r".\iCloud Photos"
 output_dir =r""
 
 logger_level         = DEBUG
@@ -45,7 +45,7 @@ logger.info("Will use tool '%s'" % (tool.get_name()))
 
 langs = tool.get_available_languages()
 logger.debug(langs)
-lang = langs[6]
+lang = langs[langs.index("jpn")]
 logger.info("Will use lang '%s'" % (lang))
 
 builder = pyocr.builders.DigitLineBoxBuilder(tesseract_layout=4)
@@ -74,7 +74,7 @@ for img_path in target_dir.iterdir():
     logger.debug(f"raw image shape| w: {w}, h: {h}")
 
 
-    i_trans = cv2.warpPerspective(img, M, (900, 680), flags=cv2.INTER_CUBIC)
+    i_trans = cv2.warpPerspective(img, M, (900, 680), flags=cv2.INTER_CUBIC)  # cv2.INTER_CUBIC
     h, w = i_trans.shape
     logger.debug(f"i_trans shape| w: {w}, h: {h}")
 
@@ -119,13 +119,13 @@ for img_path in target_dir.iterdir():
         ret[k] = val
 
     raw_df = pd.DataFrame(ret)
-    raw_df["file"] = str(img_path.name)    
+    raw_df["file"] = str(img_path)    
     df = pd.concat([df, raw_df])
 
 df["v_0"] = False
 df.loc[df["BATTLES"] == df["WIN"] + df["LOSE"] + df["DRAW"], "v_0"] = True
 # df["RANK"] = df["RANK"].apply(np.abs)
-df.astype(int)
+# df.astype(int)
 
 
 with open("raw_result.csv", mode="w", encoding="cp932", newline="", errors="ignore") as f:
